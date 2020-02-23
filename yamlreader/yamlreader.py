@@ -1,11 +1,9 @@
 from __future__ import print_function, absolute_import, unicode_literals, division
 
-__version__ = '3.0.3'
+__version__ = '3.0.5'
 
-#from ruamel.yaml import MarkedYAMLError, safe_load, safe_load_all, safe_dump
-from ruamel.yaml import YAML, MarkedYAMLError
-yaml = YAML()
-yaml.default_style='"'
+from ruamel.yaml import safe_load_all, safe_dump
+from ruamel.yaml.error import MarkedYAMLError
 import sys
 
 import glob
@@ -70,7 +68,7 @@ def yaml_load(source, defaultdata=NO_DEFAULT):
     Always returns a dict. The YAML files are expected to contain some kind of
     key:value structures, possibly deeply nested. When merging, lists are
     appended and dict keys are replaced. The YAML files are read with the
-    yaml.safe_load function.
+    yaml.safe_load_all function.
 
     source can be a file, a dir, a list/tuple of files or a string containing
     a glob expression (with ?*[]).
@@ -107,7 +105,7 @@ def yaml_load(source, defaultdata=NO_DEFAULT):
         for yaml_file in files:
             try:
                 with open(yaml_file) as f:
-                    new_data = yaml.load_all(f)
+                    new_data = safe_load_all(f)
                     for doc in new_data:
                         data = data_merge(data, doc)
                 logger.debug("YAML LOAD: %s", new_data)
@@ -141,7 +139,7 @@ def __main():
     if not args:
         parser.error("Need at least one argument")
     try:
-        yaml.dump(yaml_load(args, defaultdata={}), sys.stdout)
+        safe_dump(yaml_load(args, defaultdata={}), sys.stdout)
     except Exception as e:
         parser.error(e)
 

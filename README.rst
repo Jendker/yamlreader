@@ -1,8 +1,3 @@
-.. image:: https://travis-ci.org/ImmobilienScout24/yamlreader.png?branch=master
-   :alt: Travis build status image
-   :align: left
-   :target: https://travis-ci.org/ImmobilienScout24/yamlreader
-
 ==========
 yamlreader
 ==========
@@ -19,47 +14,6 @@ with the following rules:
 The purpose is to allow several YAML files instead of a single YAML file. We
 use it to help our software read configuration data from an arbitrary amount
 of YAML files instead of a single YAML file.
-
-Read the unit test to see some examples.
-
-Building and Installation
-=========================
-Using pip
----------
-**yamlreader** is available with ``pip``:
-::
-
-    pip install yamlreader
-
-Manual build and installation
------------------------------
-If you want to make changes or use e.g. ``fpm`` for packaging this, you need to
-prepare the development environment to make further steps.
-
-Prepare the source
-~~~~~~~~~~~~~~~~~~
-::
-
-    git clone https://github.com/ImmobilienScout24/yamlreader.git
-    cd yamlreader
-    virtualenv venv
-    source venv/bin/activate
-    pip install pybuilder
-    pyb install_dependencies
-
-Running tests
-~~~~~~~~~~~~~
-::
-
-    pyb verify
-
-Generating a setup.py
-~~~~~~~~~~~~~~~~~~~~~
-::
-
-    pyb
-    cd target/dist/yamlreader-<VERSION>
-    ./setup.py <whatever you want>
 
 Running
 =======
