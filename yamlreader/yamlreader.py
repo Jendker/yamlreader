@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, unicode_literals, division
-
 __version__ = '3.0.5'
 
 from ruamel.yaml import safe_load_all, safe_dump
@@ -9,7 +7,6 @@ import sys
 import glob
 import os
 import logging
-import six
 
 
 class NoDefault(object):
@@ -62,7 +59,7 @@ def data_merge(a, b):
     return a
 
 
-def yaml_load(source, defaultdata=NO_DEFAULT):
+def yaml_load(source=None, default_data=NO_DEFAULT, default_path=None):
     """merge YAML data from files found in source
 
     Always returns a dict. The YAML files are expected to contain some kind of
@@ -75,15 +72,19 @@ def yaml_load(source, defaultdata=NO_DEFAULT):
 
     For a directory, all *.yaml files will be read in alphabetical order.
 
-    defaultdata can be used to initialize the data.
+    `default_data` can be used to initialize the data.
+    `default_path` load the data from it first and afterwards it will be extended/overwritten by data from `source`.
     """
     logger = logging.getLogger(__name__)
-    logger.debug("initialized with source=%s, defaultdata=%s", source, defaultdata)
-    if defaultdata is NO_DEFAULT:
+    logger.debug("initialized with source=%s, default_data=%s, default_path=%s", source, default_data, default_path)
+    if default_data is NO_DEFAULT:
         data = None
     else:
-        data = defaultdata
-    files = []
+        data = default_data
+    if default_path is not None:
+        data = data_merge(data, yaml_load(default_path))
+    if source is None:
+        return data
     if type(source) is not str and len(source) == 1:
         # when called from __main source is always a list, even if it contains only one item.
         # turn into a string if it contains only one item to support our different call modes
@@ -113,7 +114,7 @@ def yaml_load(source, defaultdata=NO_DEFAULT):
                 logger.error("YAML Error: %s", e)
                 raise YamlReaderError("YAML Error: %s" % str(e))
     else:
-        if defaultdata is NO_DEFAULT:
+        if default_data is NO_DEFAULT:
             logger.error("No YAML data found in %s and no default data given", source)
             raise YamlReaderError("No YAML data found in %s" % source)
 
@@ -139,7 +140,7 @@ def __main():
     if not args:
         parser.error("Need at least one argument")
     try:
-        safe_dump(yaml_load(args, defaultdata={}), sys.stdout)
+        safe_dump(yaml_load(args, default_data={}), sys.stdout)
     except Exception as e:
         parser.error(e)
 
