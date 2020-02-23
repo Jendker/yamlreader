@@ -12,8 +12,8 @@ use_plugin("python.distutils")
 name = "yamlreader"
 summary = 'Merge YAML data from given files, dir or file glob'
 authors = [Author('Schlomo Schapiro', "schlomo.schapiro@immobilienscout24.de")]
-url = 'https://github.com/ImmobilienScout24/yamlreader'
-version = '3.0.4'
+url = 'https://github.com/Jendker/yamlreader'
+version = '3.0.5'
 description = open("README.rst").read()
 license = 'Apache License 2.0'
 
@@ -33,10 +33,11 @@ def set_properties(project):
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ])
 
     project.set_property("coverage_break_build", False) # default is True
