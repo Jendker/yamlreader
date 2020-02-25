@@ -21,7 +21,7 @@ class YamlReaderError(Exception):
     pass
 
 
-def data_merge(a, b):
+def data_merge(a, b, overwrite_lists=True):
     """merges b into a and return merged result
     based on http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge
     and extended to also merge arrays and to replace the content of keys with the same name
@@ -31,7 +31,11 @@ def data_merge(a, b):
     # ## debug output
     # sys.stderr.write("DEBUG: %s to %s\n" %(b,a))
     try:
-        if a is None or isinstance(a, (six.string_types, float, six.integer_types)):
+        if overwrite_lists:
+            is_instance = isinstance(a, (str, float, int, list))
+        else:
+            is_instance = isinstance(a, (str, float, int))
+        if a is None or is_instance:
             # border case for first run or if a is a primitive
             a = b
         elif isinstance(a, list):
