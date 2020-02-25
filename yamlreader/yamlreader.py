@@ -21,46 +21,51 @@ class YamlReaderError(Exception):
     pass
 
 
-def data_merge(a, b, overwrite_lists=True):
+def data_merge(target, source, overwrite_lists=True):
     """merges b into a and return merged result
     based on http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge
-    and extended to also merge arrays and to replace the content of keys with the same name
+    and extended to also merge arrays (depending on argument overwrite_lists) and to replace the content
+    of keys with the same name
 
     NOTE: tuples and arbitrary objects are not handled as it is totally ambiguous what should happen"""
     key = None
     # ## debug output
-    # sys.stderr.write("DEBUG: %s to %s\n" %(b,a))
+    # sys.stderr.write("DEBUG: %s to %s\n" %(source,target))
     try:
-        if overwrite_lists:
-            is_instance = isinstance(a, (str, float, int, list))
+        if isinstance(target, (list, dict)):
+            new_target = target.copy()
         else:
-            is_instance = isinstance(a, (str, float, int))
-        if a is None or is_instance:
+            new_target = target
+        if overwrite_lists:
+            is_instance = isinstance(new_target, (str, float, int, list))
+        else:
+            is_instance = isinstance(new_target, (str, float, int))
+        if new_target is None or is_instance:
             # border case for first run or if a is a primitive
-            a = b
-        elif isinstance(a, list):
+            new_target = source
+        elif isinstance(new_target, list):
             # lists can be only appended
-            if isinstance(b, list):
+            if isinstance(source, list):
                 # merge lists
-                a.extend(b)
+                new_target.extend(source)
             else:
                 # append to list
-                a.append(b)
-        elif isinstance(a, dict):
+                new_target.append(source)
+        elif isinstance(new_target, dict):
             # dicts must be merged
-            if isinstance(b, dict):
-                for key in b:
-                    if key in a:
-                        a[key] = data_merge(a[key], b[key])
+            if isinstance(source, dict):
+                for key in source:
+                    if key in new_target:
+                        new_target[key] = data_merge(new_target[key], source[key])
                     else:
-                        a[key] = b[key]
+                        new_target[key] = source[key]
             else:
-                raise YamlReaderError('Cannot merge non-dict "%s" into dict "%s"' % (b, a))
+                raise YamlReaderError('Cannot merge non-dict "%s" into dict "%s"' % (source, new_target))
         else:
-            raise YamlReaderError('NOT IMPLEMENTED "%s" into "%s"' % (b, a))
+            raise YamlReaderError('NOT IMPLEMENTED "%s" into "%s"' % (source, new_target))
     except TypeError as e:
-        raise YamlReaderError('TypeError "%s" in key "%s" when merging "%s" into "%s"' % (e, key, b, a))
-    return a
+        raise YamlReaderError('TypeError "%s" in key "%s" when merging "%s" into "%s"' % (e, key, source, new_target))
+    return new_target
 
 
 def yaml_load(source=None, default_data=NO_DEFAULT, default_path=None):
